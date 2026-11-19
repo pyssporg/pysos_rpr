@@ -70,7 +70,9 @@ jobs:
           import pysos_rpr.messages as messages
 
           assert pysos_rpr.__version__ == "0.1.0"
-          assert messages.encode(messages.entity_identifier(1, 1, 1))
+          assert messages.encode(
+              messages.entity_identifier(site=1, application=1, entity=1)
+          )
           PY
 
       - name: Check the version tag
