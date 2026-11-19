@@ -36,6 +36,21 @@ path = "src/pysos_rpr/__init__.py"
 [tool.hatch.build.targets.wheel]
 packages = ["src/pysos_rpr"]
 
+# The sdist carries the schema source and the regeneration script so a released
+# tarball can rebuild the committed bindings; the wheel carries the bindings.
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src",
+  "/tests",
+  "/proto",
+  "/tools",
+  "/docs",
+  "/README.md",
+  "/CHANGELOG.md",
+  "/LICENSE",
+  "/pyproject.toml",
+]
+
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]

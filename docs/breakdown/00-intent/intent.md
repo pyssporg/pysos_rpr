@@ -27,6 +27,14 @@ plain protobuf; it borrows RPR semantics without importing HLA machinery.
 - **No runtime.** The package carries definitions, not transport, not an RTI,
   not federation services.
 
+## Release
+
+`0.1.0` is the first published release. It ships the `rpr.v2` proto source and
+the regeneration script in the sdist, the generated Python bindings in the
+wheel, and the reference codec in `pysos_rpr.messages`. The `v0.1.0` tag names
+the release commit; the earlier scaffold commit `6d8aa37` predated the schema,
+had no GitHub release and no wheels, and had no consumers.
+
 ## Vocabulary subset
 
 The first version covers five areas, each defined at intent level:

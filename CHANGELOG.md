@@ -7,8 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-19
+
 ### Added
 
+- Repository scaffold: hatchling package metadata with a dynamic version,
+  `src/` layout, CI for Python 3.11, and the vocabulary intent record under
+  `docs/breakdown/`.
+- `pysos_rpr.__version__` and an explicit public surface.
+- Package metadata tests: import, semver, and the pinned release version.
 - RPR-derived v2 vocabulary under `proto/rpr/v2/`: entity identity, spatial
   state and dead reckoning, marking, force, and platform/aircraft class, split
   into `entity.proto`, `spatial.proto` and `platform.proto` with package
@@ -36,16 +43,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `pyproject.toml` now depends on `protobuf` at runtime and `grpcio-tools`
   under `[dev]`; ruff excludes the generated bindings.
+- The sdist ships `proto/` and `tools/generate_bindings.sh`; the wheel ships
+  the generated `_proto` bindings and does not require `docs/`.
 
-## [0.1.0] - 2026-11-19
+### Release
 
-### Added
-
-- Repository scaffold: hatchling package metadata with a dynamic version,
-  `src/` layout, CI for Python 3.11, and the vocabulary intent record under
-  `docs/breakdown/`.
-- `pysos_rpr.__version__` and an explicit public surface.
-- Package metadata tests: import, semver, and the pinned release version.
-
-Proto definitions and generated bindings are deliberately absent; they belong
-to the schema and projection units.
+- The `v0.1.0` tag was re-pointed from the scaffold commit `6d8aa37` to this
+  release commit before any GitHub release or consumer existed. The tag now
+  names the first release that carries the proto schema and generated bindings.
