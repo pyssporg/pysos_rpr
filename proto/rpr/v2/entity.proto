@@ -1,0 +1,149 @@
+// RPR-derived entity identity and entity base types.
+//
+// This file is part of the pysos_rpr vocabulary. It is derived from the RPR
+// FOM but is NOT HLA-conformant: there is no RTI, no federation object model,
+// and no HLA encoding rule. Semantics follow RPR and, where RPR does, DIS
+// IEEE 1278.1.
+//
+// Conventions:
+//   * Entity identifiers are the RPR/DIS (site, application, entity) triple.
+//   * Every message reserves a never-use field-number block and the names of
+//     near-synonyms that would duplicate an existing field. Field numbers are
+//     frozen; evolution is additive.
+//   * Proto3 only. No `map` fields anywhere in this vocabulary.
+
+syntax = "proto3";
+
+package rpr.v2;
+
+import "rpr/v2/spatial.proto";
+
+// Which side an entity belongs to.
+//
+// Chosen as an enum rather than a message: the set is closed, small, and
+// carries no per-value payload. A message would add a wrapper without adding
+// information. Values match the RPR `Force` enumeration and the DIS 1278.1
+// Entity State PDU ForceID field one-for-one.
+enum Force {
+  // RPR `Force.Other`; DIS 1278.1 ForceID 0 (Other).
+  FORCE_OTHER = 0;
+
+  // RPR `Force.Friendly`; DIS 1278.1 ForceID 1 (Friendly).
+  FORCE_FRIENDLY = 1;
+
+  // RPR `Force.Opposing`; DIS 1278.1 ForceID 2 (Opposing).
+  FORCE_OPPOSING = 2;
+
+  // RPR `Force.Neutral`; DIS 1278.1 ForceID 3 (Neutral).
+  FORCE_NEUTRAL = 3;
+
+  // Never-use values. Additive growth starts at 100.
+  reserved 4 to 99;
+  reserved "FORCE_UNSPECIFIED", "FORCE_UNKNOWN";
+}
+
+// Stable identity of an object across implementations.
+//
+// RPR data type `EntityIdentifier`; DIS 1278.1 `EntityID`.
+message EntityIdentifier {
+  // RPR `EntityIdentifier.SiteID`; DIS 1278.1 `EntityID.Site` (0..65535).
+  uint32 site = 1;
+
+  // RPR `EntityIdentifier.ApplicationID`; DIS 1278.1 `EntityID.Application`
+  // (0..65535).
+  uint32 application = 2;
+
+  // RPR `EntityIdentifier.EntityNumber`; DIS 1278.1 `EntityID.Entity`
+  // (0..65535).
+  uint32 entity = 3;
+
+  // Never-use block; identity is exactly the RPR/DIS triple.
+  reserved 1000 to 1999;
+  reserved "site_id", "application_id", "entity_number", "entity_id";
+}
+
+// What kind of object an entity is.
+//
+// RPR data type `EntityType`; DIS 1278.1 `EntityType`.
+message EntityType {
+  // RPR `EntityType.Kind`; DIS 1278.1 `EntityType.Kind` (0..255).
+  uint32 kind = 1;
+
+  // RPR `EntityType.Domain`; DIS 1278.1 `EntityType.Domain` (0..255).
+  uint32 domain = 2;
+
+  // RPR `EntityType.Country`; DIS 1278.1 `EntityType.Country` (0..65535).
+  uint32 country = 3;
+
+  // RPR `EntityType.Category`; DIS 1278.1 `EntityType.Category` (0..255).
+  uint32 category = 4;
+
+  // RPR `EntityType.Subcategory`; DIS 1278.1 `EntityType.Subcategory`
+  // (0..255).
+  uint32 subcategory = 5;
+
+  // RPR `EntityType.Specific`; DIS 1278.1 `EntityType.Specific` (0..255).
+  uint32 specific = 6;
+
+  // RPR `EntityType.Extra`; DIS 1278.1 `EntityType.Extra` (0..255).
+  uint32 extra = 7;
+
+  // Never-use block. The RPR/DIS entity type is complete at seven octets.
+  reserved 1000 to 1999;
+  reserved "kind_id", "domain_id", "specific_type", "extra_type";
+}
+
+// Human-readable label carried with an entity. Not identity; never a key.
+//
+// RPR data type `Marking`; DIS 1278.1 `Marking`.
+message Marking {
+  // RPR `Marking.CharacterSet`; DIS 1278.1 `Marking.CharacterSet`.
+  uint32 character_set = 1;
+
+  // RPR `Marking.Characters`; DIS 1278.1 `Marking.Characters`.
+  // DIS fixes this at 11 octets; the proto3 string is documented as bounded
+  // to 11 octets, because proto3 has no fixed-length string type.
+  string characters = 2;
+
+  // Never-use block.
+  reserved 1000 to 1999;
+  reserved "character_set_id", "text", "label", "name";
+}
+
+// Attributes common to every entity.
+//
+// RPR object class `BaseEntity`; DIS 1278.1 Entity State PDU fields.
+message BaseEntity {
+  // RPR `BaseEntity.EntityIdentifier`; DIS 1278.1 `EntityID`.
+  EntityIdentifier entity_identifier = 1;
+
+  // RPR `BaseEntity.EntityType`; DIS 1278.1 `EntityType`.
+  EntityType entity_type = 2;
+
+  // RPR `BaseEntity.Marking`; DIS 1278.1 `Marking`.
+  Marking marking = 3;
+
+  // RPR FOM 3.0 `BaseEntity.Force` (the DIS 7 addition); DIS 1278.1
+  // Entity State PDU `ForceID`.
+  Force force = 4;
+
+  // Never-use block.
+  reserved 1000 to 1999;
+  reserved "identity", "type", "affiliation", "side";
+}
+
+// A base entity that also has a physical state in the world.
+//
+// RPR object class `PhysicalEntity`, which inherits `BaseEntity` and adds
+// `Spatial`.
+message PhysicalEntity {
+  // RPR `PhysicalEntity` inherited `BaseEntity` attributes.
+  BaseEntity base = 1;
+
+  // RPR `PhysicalEntity.Spatial`; DIS 1278.1 Entity State PDU spatial fields.
+  Spatial spatial = 2;
+
+  // Never-use block.
+  reserved 1000 to 1999;
+  reserved "base_entity", "state", "kinematics", "pose";
+}

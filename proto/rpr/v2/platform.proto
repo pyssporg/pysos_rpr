@@ -1,0 +1,80 @@
+// RPR-derived platform and aircraft class.
+//
+// This file is part of the pysos_rpr vocabulary. It is derived from the RPR
+// FOM but is NOT HLA-conformant: there is no RTI, no federation object model,
+// and no HLA encoding rule. Semantics follow RPR and, where RPR does, DIS
+// IEEE 1278.1.
+//
+// Proto3 only. No `map` fields anywhere in this vocabulary.
+
+syntax = "proto3";
+
+package rpr.v2;
+
+import "rpr/v2/entity.proto";
+
+// Coarse platform class, at the granularity the family uses to choose a symbol
+// and a kinematic default. Closed and additive; new kinds take new numbers.
+//
+// Derived from the RPR `Platform`/`Aircraft` object classes and the DIS 1278.1
+// `EntityType.Kind`/`Domain`/`Category` fields; RPR has no single equivalent
+// attribute.
+enum PlatformKind {
+  // Unknown or unclassified; the field may be omitted.
+  PLATFORM_KIND_UNKNOWN = 0;
+
+  // RPR `Aircraft` object class; DIS 1278.1 Kind 1, Domain 2.
+  PLATFORM_FIXED_WING = 1;
+
+  // RPR `Aircraft` object class (rotary wing); DIS 1278.1 Kind 1, Domain 2.
+  PLATFORM_ROTARY_WING = 2;
+
+  // RPR `Aircraft` object class (unmanned); DIS 1278.1 Kind 1, Domain 2.
+  PLATFORM_UNMANNED_AIRCRAFT = 3;
+
+  // RPR `Spacecraft` object class; DIS 1278.1 Kind 1, Domain 4.
+  PLATFORM_SPACECRAFT = 4;
+
+  // RPR `Surface` object class; DIS 1278.1 Kind 1, Domain 3.
+  PLATFORM_SURFACE_VESSEL = 5;
+
+  // RPR `Submersible` object class; DIS 1278.1 Kind 1, Domain 3.
+  PLATFORM_SUBMERSIBLE = 6;
+
+  // RPR `Ground` object class; DIS 1278.1 Kind 1, Domain 1.
+  PLATFORM_GROUND_VEHICLE = 7;
+
+  // Never-use values. Additive growth starts at 100.
+  reserved 8 to 99;
+  reserved "PLATFORM_UNSPECIFIED", "PLATFORM_OTHER";
+}
+
+// A physical entity that is a platform.
+//
+// RPR object class `Platform`, which inherits `PhysicalEntity`.
+message Platform {
+  // RPR `Platform` inherited `PhysicalEntity` attributes.
+  PhysicalEntity physical = 1;
+
+  // RPR `Platform`/`Aircraft` class, derived from `EntityType`
+  // (Kind/Domain/Category); see `PlatformKind`.
+  PlatformKind kind = 2;
+
+  // Never-use block.
+  reserved 1000 to 1999;
+  reserved "platform_class", "category", "entity_type", "physical_entity";
+}
+
+// An aircraft platform.
+//
+// RPR object class `Aircraft`. RPR adds no attribute to `Aircraft` beyond
+// `Platform`; this message exists as a distinct type so a consumer can require
+// an aircraft without re-reading `Platform.kind`.
+message Aircraft {
+  // RPR `Aircraft` inherited `Platform` attributes.
+  Platform platform = 1;
+
+  // Never-use block.
+  reserved 1000 to 1999;
+  reserved "aircraft_type", "airframe", "platform_kind";
+}

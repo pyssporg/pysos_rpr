@@ -21,12 +21,14 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Topic :: Scientific/Engineering",
 ]
-# The vocabulary adds no runtime dependency yet. Generated bindings and their
-# protobuf runtime arrive with the projection work, not in the scaffold.
-dependencies = []
+# Generated bindings are a projection of `proto/rpr/v2/`; the protobuf runtime
+# is the only dependency they need.
+dependencies = ["protobuf>=5.29,<6"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.6"]
+# grpcio-tools 1.71.2 bundles the protoc that produced the committed bindings;
+# keep it exact so regeneration is byte-identical.
+dev = ["pytest>=8", "ruff>=0.6", "grpcio-tools==1.71.2"]
 
 [tool.hatch.version]
 path = "src/pysos_rpr/__init__.py"
@@ -43,6 +45,9 @@ addopts = "-q"
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+# `src/pysos_rpr/_proto` is protoc output; it is regenerated, never linted or
+# edited by hand.
+extend-exclude = ["src/pysos_rpr/_proto"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B"]

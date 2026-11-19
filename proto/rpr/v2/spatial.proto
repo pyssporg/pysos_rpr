@@ -1,0 +1,217 @@
+// RPR-derived spatial state and dead reckoning.
+//
+// This file is part of the pysos_rpr vocabulary. It is derived from the RPR
+// FOM but is NOT HLA-conformant: there is no RTI, no federation object model,
+// and no HLA encoding rule. Semantics follow RPR and, where RPR does, DIS
+// IEEE 1278.1.
+//
+// Spatial conventions (part of the contract, not free-form prose):
+//   * Position (`WorldLocation`) is geocentric ECEF in metres, exactly as
+//     RPR `Spatial.WorldLocation` and the DIS 1278.1 Entity Location.
+//   * Linear velocity and acceleration (`Velocity`, `Acceleration`) are in the
+//     entity's body frame, in metres per second and metres per second squared,
+//     exactly as RPR `Spatial.Velocity` / `Spatial.Acceleration` and the DIS
+//     1278.1 Entity Linear Velocity / Entity Linear Acceleration.
+//   * Angles (`Orientation`) are Euler angles in radians: psi (yaw) about the
+//     entity Z axis, theta (pitch) about the body Y axis, phi (roll) about the
+//     body X axis, exactly as RPR `Spatial.Orientation` and DIS 1278.1 Entity
+//     Orientation.
+//   * Angular velocity (`AngularVelocity`) is in the body frame, in radians per
+//     second, exactly as RPR `Spatial.AngularVelocity` and the DIS 1278.1
+//     Entity Angular Velocity.
+//   * `Spatial.world_location` is the dead-reckoning reference point for the
+//     state carried with it.
+//   * Proto3 only. No `map` fields anywhere in this vocabulary.
+
+syntax = "proto3";
+
+package rpr.v2;
+
+// Geocentric ECEF position in metres.
+//
+// RPR `Spatial.WorldLocation` (WorldLocationStruct); DIS 1278.1 Entity
+// Location, three 64-bit floats.
+message WorldLocation {
+  // RPR `Spatial.WorldLocation.X`; DIS 1278.1 `EntityLocation.X`.
+  double x = 1;
+
+  // RPR `Spatial.WorldLocation.Y`; DIS 1278.1 `EntityLocation.Y`.
+  double y = 2;
+
+  // RPR `Spatial.WorldLocation.Z`; DIS 1278.1 `EntityLocation.Z`.
+  double z = 3;
+
+  // Never-use block. This vocabulary has one frame: ECEF.
+  reserved 1000 to 1999;
+  reserved "east", "north", "up", "latitude", "longitude", "altitude";
+}
+
+// Entity attitude as Euler angles in radians.
+//
+// RPR `Spatial.Orientation` (EulerAngles); DIS 1278.1 Entity Orientation.
+message Orientation {
+  // RPR `Spatial.Orientation.Psi` (yaw); DIS 1278.1 `EntityOrientation.Psi`.
+  float psi = 1;
+
+  // RPR `Spatial.Orientation.Theta` (pitch); DIS 1278.1
+  // `EntityOrientation.Theta`.
+  float theta = 2;
+
+  // RPR `Spatial.Orientation.Phi` (roll); DIS 1278.1 `EntityOrientation.Phi`.
+  float phi = 3;
+
+  // Never-use block. Quaternions are deliberately not a second orientation
+  // representation.
+  reserved 1000 to 1999;
+  reserved "yaw", "pitch", "roll", "quaternion";
+}
+
+// Linear velocity in the entity body frame, in metres per second.
+//
+// RPR `Spatial.Velocity` (VelocityVector); DIS 1278.1 Entity Linear Velocity.
+message Velocity {
+  // RPR `Spatial.Velocity.X`; DIS 1278.1 `EntityLinearVelocity.X`.
+  float x = 1;
+
+  // RPR `Spatial.Velocity.Y`; DIS 1278.1 `EntityLinearVelocity.Y`.
+  float y = 2;
+
+  // RPR `Spatial.Velocity.Z`; DIS 1278.1 `EntityLinearVelocity.Z`.
+  float z = 3;
+
+  // Never-use block.
+  reserved 1000 to 1999;
+  reserved "east", "north", "up", "speed", "heading", "ground_speed";
+}
+
+// Linear acceleration in the entity body frame, in metres per second squared.
+//
+// RPR `Spatial.Acceleration` (AccelerationVector); DIS 1278.1 Entity Linear
+// Acceleration.
+message Acceleration {
+  // RPR `Spatial.Acceleration.X`; DIS 1278.1 `EntityLinearAcceleration.X`.
+  float x = 1;
+
+  // RPR `Spatial.Acceleration.Y`; DIS 1278.1 `EntityLinearAcceleration.Y`.
+  float y = 2;
+
+  // RPR `Spatial.Acceleration.Z`; DIS 1278.1 `EntityLinearAcceleration.Z`.
+  float z = 3;
+
+  // Never-use block.
+  reserved 1000 to 1999;
+  reserved "east", "north", "up", "g_load";
+}
+
+// Angular velocity in the entity body frame, in radians per second.
+//
+// RPR `Spatial.AngularVelocity` (AngularVelocityVector); DIS 1278.1 Entity
+// Angular Velocity.
+message AngularVelocity {
+  // RPR `Spatial.AngularVelocity.X`; DIS 1278.1 `EntityAngularVelocity.X`.
+  float x = 1;
+
+  // RPR `Spatial.AngularVelocity.Y`; DIS 1278.1 `EntityAngularVelocity.Y`.
+  float y = 2;
+
+  // RPR `Spatial.AngularVelocity.Z`; DIS 1278.1 `EntityAngularVelocity.Z`.
+  float z = 3;
+
+  // Never-use block.
+  reserved 1000 to 1999;
+  reserved "roll_rate", "pitch_rate", "yaw_rate", "omega";
+}
+
+// Dead-reckoning algorithm selector.
+//
+// Values follow the RPR `DeadReckoningAlgorithm` enumeration and the DIS
+// 1278.1 Dead Reckoning Algorithm field. The letters are the DIS
+// (rotation, rate, frame) triple: F/R = fixed/rotating, P/V = position/
+// velocity, W/B = world/body.
+enum DeadReckoningAlgorithm {
+  // RPR `DeadReckoningAlgorithm.Other`; DIS 1278.1 value 0.
+  DR_ALGORITHM_OTHER = 0;
+
+  // RPR `DeadReckoningAlgorithm.Static`; DIS 1278.1 value 1.
+  DR_ALGORITHM_STATIC = 1;
+
+  // RPR `DeadReckoningAlgorithm.Fpw`; DIS 1278.1 value 2.
+  DR_ALGORITHM_FPW = 2;
+
+  // RPR `DeadReckoningAlgorithm.Fvw`; DIS 1278.1 value 3.
+  DR_ALGORITHM_FVW = 3;
+
+  // RPR `DeadReckoningAlgorithm.Fpb`; DIS 1278.1 value 4.
+  DR_ALGORITHM_FPB = 4;
+
+  // RPR `DeadReckoningAlgorithm.Fvb`; DIS 1278.1 value 5.
+  DR_ALGORITHM_FVB = 5;
+
+  // RPR `DeadReckoningAlgorithm.Rpw`; DIS 1278.1 value 6.
+  DR_ALGORITHM_RPW = 6;
+
+  // RPR `DeadReckoningAlgorithm.Rvw`; DIS 1278.1 value 7.
+  DR_ALGORITHM_RVW = 7;
+
+  // RPR `DeadReckoningAlgorithm.Rpb`; DIS 1278.1 value 8.
+  DR_ALGORITHM_RPB = 8;
+
+  // RPR `DeadReckoningAlgorithm.Rvb`; DIS 1278.1 value 9.
+  DR_ALGORITHM_RVB = 9;
+
+  // Never-use values. Additive growth starts at 100.
+  reserved 10 to 99;
+  reserved "DEAD_RECKONING_UNSPECIFIED";
+}
+
+// Dead-reckoning parameters carried with the state they extrapolate.
+//
+// RPR `Spatial.DeadReckoningParameters`; DIS 1278.1 Dead Reckoning Parameters
+// record. The linear acceleration and angular velocity from that record live
+// on `Spatial.acceleration` and `Spatial.angular_velocity`; the reference point
+// is `Spatial.world_location`. They are not duplicated here.
+message DeadReckoningParameters {
+  // RPR `Spatial.DeadReckoningParameters.Algorithm`; DIS 1278.1 Dead Reckoning
+  // Algorithm.
+  DeadReckoningAlgorithm algorithm = 1;
+
+  // RPR `Spatial.DeadReckoningParameters.Parameters`; DIS 1278.1 Dead Reckoning
+  // Parameters block, exactly 15 octets.
+  bytes parameters = 2;
+
+  // Never-use block; the rates and reference point live on `Spatial`.
+  reserved 1000 to 1999;
+  reserved "linear_acceleration", "angular_velocity", "reference_point",
+      "entity_linear_acceleration", "entity_angular_velocity";
+}
+
+// Position, attitude, motion and the parameters needed to extrapolate them.
+//
+// RPR `Spatial` struct; DIS 1278.1 Entity State PDU spatial fields.
+message Spatial {
+  // RPR `Spatial.WorldLocation`; DIS 1278.1 Entity Location (ECEF, metres).
+  WorldLocation world_location = 1;
+
+  // RPR `Spatial.IsFrozen`; no DIS 1278.1 counterpart (dead-reckoning hint).
+  bool is_frozen = 2;
+
+  // RPR `Spatial.Orientation`; DIS 1278.1 Entity Orientation (radians).
+  Orientation orientation = 3;
+
+  // RPR `Spatial.Velocity`; DIS 1278.1 Entity Linear Velocity (body frame).
+  Velocity velocity = 4;
+
+  // RPR `Spatial.Acceleration`; DIS 1278.1 Entity Linear Acceleration.
+  Acceleration acceleration = 5;
+
+  // RPR `Spatial.AngularVelocity`; DIS 1278.1 Entity Angular Velocity.
+  AngularVelocity angular_velocity = 6;
+
+  // RPR `Spatial.DeadReckoningParameters`; DIS 1278.1 Dead Reckoning
+  // Parameters.
+  DeadReckoningParameters dead_reckoning = 7;
+
+  // Never-use block. One frame, one state message.
+  reserved 1000 to 1999;
+  reserved "position", "location", "kinematics", "frame", "euler_angles";
+}

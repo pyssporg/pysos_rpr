@@ -21,8 +21,14 @@
 pip install pysos-rpr
 ```
 
-The protobuf definitions and generated bindings are not part of 0.1.0. That release is the repository scaffold: package metadata, CI and the vocabulary intent record.
+The source tree ships the proto definitions under `proto/rpr/v2/`, and the
+package ships the committed Python bindings under `pysos_rpr._proto`, so
+`protoc` is not needed at runtime. Regenerate the bindings with
+`tools/generate_bindings.sh`; the field-level RPR and DIS mapping is in
+`docs/rpr-mapping.md`.
 
 ## Status
 
-0.1.0 is a scaffold. The schema lands in the next unit, and the Python projection after it.
+0.1.0 is the published scaffold tag. The current tree carries the R2/R3
+vocabulary (`proto/rpr/v2/`), its generated Python bindings, and the schema
+contract tests that pin field numbers, reserved ranges and golden bytes.

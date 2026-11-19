@@ -1,9 +1,9 @@
 # Vocabulary subset
 
 The first vocabulary covers five areas. This leaf fixes what each area means
-and what it refuses. Message names, field numbers and proto syntax are
-deliberately absent: they belong to the schema unit, and this record must not
-pre-empt it.
+and what it refuses. The concrete message shapes, field numbers and reserved
+ranges live in `proto/rpr/v2/` and are mapped field by field in
+`docs/rpr-mapping.md`.
 
 ## Entity identity
 
@@ -15,8 +15,8 @@ to compare and hash.
 - Two implementations must be able to mint identities independently, without a
   shared registry or a central allocator.
 - The RPR entity identifier shape (site, application, entity) is the starting
-  point. Whether the vocabulary keeps that triple or widens it is a schema
-  decision.
+  point. The vocabulary keeps that triple as
+  `EntityIdentifier.site/application/entity`.
 
 ## Spatial state and dead reckoning
 
