@@ -19,6 +19,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and names, no `map` fields, and a deterministic golden `Aircraft` encoding.
 - `docs/rpr-mapping.md`: field-by-field RPR and DIS 1278.1 mapping, plus the
   statement of what "RPR-derived, not conformant" excludes.
+- `pysos_rpr.messages`: the documented reference codec over the generated
+  bindings, with deterministic `encode`, typed `decode`, `RprDecodeError`
+  subclasses, and an explicit unknown-field policy.
+- Ergonomic constructors for the whole subset (`entity_identifier`,
+  `entity_type`, `marking`, `base_entity`, `spatial_ecef`, `entity_state`,
+  `aircraft_entity`, and the component constructors). Identity and force are
+  required; constructors return generated messages.
+- `validate(message) -> list[str]` for the semantic rules now listed in
+  `docs/rpr-mapping.md`, and `to_dict` / `from_dict` via protobuf JSON.
+- Protobuf JSON fixtures `tests/fixtures/aircraft.proto.json` and
+  `tests/fixtures/base_entity.proto.json`, plus codec, validation,
+  unknown-field and cross-process determinism tests.
 
 ### Changed
 

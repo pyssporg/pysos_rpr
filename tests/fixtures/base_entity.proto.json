@@ -1,0 +1,19 @@
+{
+  "entity_identifier": {
+    "site": 42,
+    "application": 7,
+    "entity": 9001
+  },
+  "entity_type": {
+    "kind": 1,
+    "domain": 1,
+    "country": 276,
+    "category": 2,
+    "subcategory": 3
+  },
+  "marking": {
+    "character_set": 1,
+    "characters": "ALPHA-7"
+  },
+  "force": "FORCE_NEUTRAL"
+}

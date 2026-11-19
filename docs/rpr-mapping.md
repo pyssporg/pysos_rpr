@@ -55,6 +55,34 @@ not a conformance claim, and the following are explicitly outside it:
   needed by the algorithm live on `Spatial.acceleration` and
   `Spatial.angular_velocity`; `DeadReckoningParameters` does not duplicate them.
 
+## Semantic validation rules
+
+These rules are part of the vocabulary contract. `pysos_rpr.messages.validate`
+implements them and returns every violation; the wire format itself does not
+enforce them, because proto3 scalar types and open enums accept wider values.
+
+- **Identity ranges.** `EntityIdentifier.site`, `.application` and `.entity`
+  are 0..65535.
+- **Entity type ranges.** `EntityType.kind`, `.domain`, `.category`,
+  `.subcategory`, `.specific` and `.extra` are 0..255; `.country` is 0..65535.
+- **Marking.** `Marking.characters` is at most 11 UTF-8 octets and printable
+  text. Empty marking is valid.
+- **Force.** `BaseEntity.force` is one of the defined `Force` values
+  (`FORCE_OTHER` 0 through `FORCE_NEUTRAL` 3). `FORCE_OTHER` is the
+  unknown/unaligned value, not an unset marker.
+- **Dead-reckoning algorithm.** `DeadReckoningParameters.algorithm` is one of
+  the defined `DeadReckoningAlgorithm` values (0..9).
+- **Platform kind.** `Platform.kind` is one of the defined `PlatformKind`
+  values (0..7).
+- **Finite spatial scalars.** Every `WorldLocation.x/y/z`,
+  `Orientation.psi/theta/phi`, `Velocity.x/y/z`, `Acceleration.x/y/z` and
+  `AngularVelocity.x/y/z` value is finite; NaN and infinity are not valid.
+- **Dead-reckoning parameters.** `DeadReckoningParameters.parameters` is
+  either empty (omitted) or exactly 15 octets.
+- **Required submessages.** `BaseEntity.entity_identifier`,
+  `PhysicalEntity.base`, `Spatial.world_location`, `Platform.physical` and
+  `Aircraft.platform` must be present.
+
 ## Field mapping
 
 | RPR attribute | Proto message.field | DIS 1278.1 field |

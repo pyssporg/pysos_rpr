@@ -1,0 +1,55 @@
+{
+  "platform": {
+    "physical": {
+      "base": {
+        "entity_identifier": {
+          "site": 1,
+          "application": 2,
+          "entity": 1001
+        },
+        "entity_type": {
+          "kind": 1,
+          "domain": 2,
+          "country": 840,
+          "category": 1,
+          "subcategory": 1
+        },
+        "marking": {
+          "character_set": 1,
+          "characters": "VIPER-01"
+        },
+        "force": "FORCE_FRIENDLY"
+      },
+      "spatial": {
+        "world_location": {
+          "x": 4533212.5,
+          "y": 611234.25,
+          "z": 4482341.75
+        },
+        "orientation": {
+          "psi": 0.7853982,
+          "theta": -0.0523599,
+          "phi": 0.0174533
+        },
+        "velocity": {
+          "x": 220.5,
+          "z": -1.25
+        },
+        "acceleration": {
+          "x": 0.5,
+          "z": 9.75
+        },
+        "angular_velocity": {
+          "x": 0.01,
+          "y": -0.02,
+          "z": 0.03
+        },
+        "dead_reckoning": {
+          "algorithm": "DR_ALGORITHM_FVB",
+          "parameters": "AAAAAAAAAAAAAAAAAAAA"
+        }
+      }
+    },
+    "kind": "PLATFORM_FIXED_WING"
+  }
+}

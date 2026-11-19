@@ -27,8 +27,52 @@ package ships the committed Python bindings under `pysos_rpr._proto`, so
 `tools/generate_bindings.sh`; the field-level RPR and DIS mapping is in
 `docs/rpr-mapping.md`.
 
+## API
+
+`pysos_rpr.messages` is the documented Python reference surface over the
+generated bindings. It wraps the proto; it never redefines it.
+
+- `encode(message) -> bytes` serializes deterministically.
+- `decode(cls, data, *, strict=True)` parses a payload. Malformed data raises
+  `RprMalformedPayloadError` (a `RprDecodeError`, never a protobuf
+  `DecodeError`). Unknown fields are rejected in strict mode with
+  `RprUnknownFieldError`; pass `strict=False` to preserve them.
+- Constructors return generated messages and require identity and force:
+  `entity_identifier`, `entity_type`, `marking`, `base_entity`,
+  `world_location`, `orientation`, `velocity`, `acceleration`,
+  `angular_velocity`, `dead_reckoning`, `spatial`, `spatial_ecef`,
+  `physical_entity`, `entity_state`, `platform`, `aircraft`,
+  `aircraft_entity`.
+- `validate(message) -> list[str]` returns every semantic-rule violation; the
+  rules are documented in `docs/rpr-mapping.md`.
+- `to_dict` / `from_dict` use protobuf JSON (`json_format`) for fixture and
+  test interchange. The example fixtures live in `tests/fixtures/`.
+
+```python
+from pysos_rpr import messages as rpr
+
+aircraft = rpr.aircraft_entity(
+    entity_identifier=rpr.entity_identifier(site=1, application=2, entity=1001),
+    entity_type=rpr.entity_type(kind=1, domain=2, country=840),
+    force="FORCE_FRIENDLY",
+    spatial=rpr.spatial_ecef(x=4533212.5, y=611234.25, z=4482341.75),
+    kind="PLATFORM_FIXED_WING",
+)
+payload = rpr.encode(aircraft)
+assert rpr.decode(rpr.Aircraft, payload) == aircraft
+assert rpr.validate(aircraft) == []
+```
+
+### Unknown-field policy
+
+Decoding is strict by default: a payload carrying fields absent from the schema
+raises `RprUnknownFieldError`. `decode(..., strict=False)` keeps those fields on
+the message, and `encode` emits them again. For a payload produced by `encode`,
+the non-strict decode/re-encode pair is byte-identical.
+
 ## Status
 
 0.1.0 is the published scaffold tag. The current tree carries the R2/R3
-vocabulary (`proto/rpr/v2/`), its generated Python bindings, and the schema
-contract tests that pin field numbers, reserved ranges and golden bytes.
+vocabulary (`proto/rpr/v2/`), its generated Python bindings, the schema
+contract tests that pin field numbers, reserved ranges and golden bytes, and
+the `pysos_rpr.messages` reference codec.

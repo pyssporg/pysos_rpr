@@ -57,6 +57,16 @@ full order-of-battle taxonomy.
 - A neutral or unknown kind exists, so the field can be omitted in practice
   without losing the record.
 
+## Reference implementation
+
+The Python package publishes `pysos_rpr.messages` as a reference codec over the
+generated bindings: deterministic `encode`, strict-by-default `decode` with an
+explicit unknown-field policy, constructors that require identity and force,
+protobuf JSON helpers, and `validate` for the semantic rules in
+`docs/rpr-mapping.md`. Every constructor returns a generated message; the proto
+remains the only schema definition. Conversions to `pysos_interop.EntityState`
+stay in `pysos_interop`.
+
 ## Composition
 
 The areas compose by reference, not by duplication. A state message refers to
