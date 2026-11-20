@@ -15,7 +15,10 @@ plain protobuf; it borrows RPR semantics without importing HLA machinery.
 ## Commitments
 
 - **One schema, many projections.** The proto definitions are the single
-  source. Every language binding is generated from them.
+  source. Every projection is generated from them: the Python bindings, the
+  SysML port library, and the FMI adapter. A projection may depend on the
+  implementer it projects onto; the proto stays the only place vocabulary is
+  written.
 - **RPR-derived, not RPR.** Names, enumerations and field meanings follow the
   RPR FOM where it is clear, stable and useful. Where an HLA concept does not
   map (interaction ordering, ownership transfer, federate handles), the
@@ -24,8 +27,10 @@ plain protobuf; it borrows RPR semantics without importing HLA machinery.
   first published tag. Evolution is additive.
 - **Implementable twice.** The vocabulary must be expressible by an independent
   second implementation without reading the first one's code.
-- **No runtime.** The package carries definitions, not transport, not an RTI,
-  not federation services.
+- **No runtime of its own.** The package carries definitions, not transport,
+  not an RTI, not federation services. A projection may *depend on* an artifact
+  implementer to emit that implementer's artifact; the vocabulary never grows a
+  transport or a scheduler, and no implementer depends on this package.
 
 ## Release
 

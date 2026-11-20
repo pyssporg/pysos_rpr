@@ -29,9 +29,21 @@ dependencies = ["protobuf>=5.29,<6"]
 # grpcio-tools 1.71.2 bundles the protoc that produced the committed bindings;
 # keep it exact so regeneration is byte-identical.
 dev = ["pytest>=8", "ruff>=0.6", "grpcio-tools==1.71.2"]
+# The FMI projection is the only module that imports an artifact implementer
+# (DEC-001).  The base install stays vocabulary-only and dependency-free.
+# Pinned to a release wheel, never a PyPI name, like every sibling edge; 0.5.0
+# is the first release carrying the out-of-tree backend seam this projection
+# needs, so until that wheel is published the workspace installs it editable.
+projection = [
+  "pyfmi-interop[sysml] @ https://github.com/pyssporg/pyfmi_interop/releases/download/v0.5.0/pyfmi_interop-0.5.0-py3-none-linux_x86_64.whl",
+]
 
 [tool.hatch.version]
 path = "src/pysos_rpr/__init__.py"
+
+[tool.hatch.metadata]
+# The projection extra is a PEP 508 direct reference to a release asset.
+allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pysos_rpr"]
@@ -43,6 +55,7 @@ include = [
   "/src",
   "/tests",
   "/proto",
+  "/sysml",
   "/tools",
   "/docs",
   "/README.md",

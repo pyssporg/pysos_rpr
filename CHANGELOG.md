@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Generated SysML projection of the entity state
+  (`sysml/rpr_entity.sysml`, `src/pysos_rpr/schema_paths.py`), flat because the
+  dialect has no record type; `bytes` fields are omitted and defaulted empty.
+- `pysos_rpr.projection`: an `rpr` serialization backend whose FMI payload is
+  `rpr.v2.PhysicalEntity`, and `generate_entity_adapter()`.
+- `frame_mode` is `identity`: values pass through unconverted and orientation is
+  a pure reorder. `exact` is reserved and raises. Identity is an interop
+  stand-in, not RPR conformance; it is recorded in the packaged
+  `resources/rpr_projection.json`.
+- `projection` optional extra (DEC-001: a projection may depend on the artifact
+  implementer it targets).
+
 ## [0.1.0] - 2026-11-19
 
 ### Added

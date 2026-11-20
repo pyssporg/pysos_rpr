@@ -19,8 +19,14 @@ lifecycle.
 
 - Vocabulary areas: entity identity, spatial state and dead reckoning,
   marking, force, and platform/aircraft class.
-- It sits near the bottom of the dependency graph; consumers depend on it,
-  never the reverse.
+- Dependency edges point both ways by kind, not by rank: the vocabulary and
+  its reference codec depend on nothing, while a *projection* may import the
+  artifact implementer it targets. Consumers never make the vocabulary depend
+  on them.
+- Projection: the SysML port library and the FMI `rpr` backend are generated
+  from the proto; `sysml/rpr_entity.sysml` and `schema_paths.py` are never
+  hand-edited. Frame mode `identity` is an interop stand-in, not RPR
+  conformance.
 
 ## Hard constraints
 
@@ -40,7 +46,11 @@ lifecycle.
   does not carry.
 - **Not HLA-conformant.** No RTI, no federation services, no FOM module, no HLA
   object model, no join/resign/ownership/time-management concepts.
-- **No dependency on another `pysos_*` or `pyssp_*` package at 0.1.0.**
+- **Dependencies follow the projection.** The schema and the reference codec
+  import no sibling package. A projection module — the SysML port library, the
+  FMI adapter — may import the implementer it projects onto (`pyfmi_interop`,
+  `pyfmi_sysml2`); a structured dependency on the artifact implementer is what
+  a projection is. No sibling ever imports this package's projection modules.
 - **No application code.** This is a vocabulary and codec contract, not a CLI,
   engine, or federation manager.
 
