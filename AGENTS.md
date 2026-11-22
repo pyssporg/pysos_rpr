@@ -49,7 +49,7 @@ lifecycle.
 - **Dependencies follow the projection.** The schema and the reference codec
   import no sibling package. A projection module — the SysML port library, the
   FMI adapter — may import the implementer it projects onto (`pyfmi_interop`,
-  `pyfmi_sysml2`); a structured dependency on the artifact implementer is what
+  `pyfmi_sysml`); a structured dependency on the artifact implementer is what
   a projection is. No sibling ever imports this package's projection modules.
 - **No application code.** This is a vocabulary and codec contract, not a CLI,
   engine, or federation manager.

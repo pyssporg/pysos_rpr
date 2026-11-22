@@ -21,6 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `projection` optional extra (DEC-001: a projection may depend on the artifact
   implementer it targets).
 
+### Changed
+
+- Import the SysML projection from `pyfmi_sysml` 0.2.0 and require
+  `pyfmi-interop>=0.6.0`; `pyfmi_interop.sysml` and `pyfmi_sysml2` are gone
+  (2026-11-22).
+- Generate through `BuildConfig` and drop the retired `fmi_layer`/`sysml_source`
+  options (2026-11-22).
+
 ## [0.1.0] - 2026-11-19
 
 ### Added

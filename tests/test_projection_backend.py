@@ -12,6 +12,7 @@ import pytest
 
 pytest.importorskip("pyfmi_interop")
 
+from pyfmi_interop import BuildConfig  # noqa: E402
 from pyfmi_interop.codegen import generate_model  # noqa: E402
 from pyfmi_interop.ir import (  # noqa: E402
     DataType,
@@ -59,7 +60,9 @@ def registered():
 
 
 def test_registered_name_is_accepted_by_generation(tmp_path):
-    target = generate_model(make_model(), tmp_path / "gen", serialization="rpr")
+    target = generate_model(
+        make_model(), tmp_path / "gen", config=BuildConfig(serialization="rpr")
+    )
 
     assert (target / "model_wire.cpp").is_file()
     cmake = (target / "CMakeLists.txt").read_text(encoding="utf-8")
@@ -71,7 +74,9 @@ def test_registered_name_is_accepted_by_generation(tmp_path):
 
 
 def test_wire_json_carries_the_entity_message(tmp_path):
-    target = generate_model(make_model(), tmp_path / "gen", serialization="rpr")
+    target = generate_model(
+        make_model(), tmp_path / "gen", config=BuildConfig(serialization="rpr")
+    )
     payload = json.loads((target / "wire.json").read_text(encoding="utf-8"))
 
     assert payload["format"] == "rpr"
@@ -91,13 +96,17 @@ def test_format_id_and_frame_mode_are_pinned():
 
 def test_a_signal_outside_the_schema_is_an_error(tmp_path):
     with pytest.raises(ProjectionError, match="not part of the rpr.v2.PhysicalEntity shape"):
-        generate_model(make_model(extra=True), tmp_path / "gen", serialization="rpr")
+        generate_model(
+            make_model(extra=True), tmp_path / "gen", config=BuildConfig(serialization="rpr")
+        )
 
 
 def test_a_wrong_data_type_is_an_error(tmp_path):
     with pytest.raises(ProjectionError, match="declares integer"):
         generate_model(
-            make_model(frozen_type=DataType.INTEGER), tmp_path / "gen", serialization="rpr"
+            make_model(frozen_type=DataType.INTEGER),
+            tmp_path / "gen",
+            config=BuildConfig(serialization="rpr"),
         )
 
 

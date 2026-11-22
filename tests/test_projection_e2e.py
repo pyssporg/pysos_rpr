@@ -12,7 +12,7 @@ import pytest
 
 pytest.importorskip("pyfmi_interop")
 pytest.importorskip("pycps_sysml2")
-pytest.importorskip("pyfmi_sysml2")
+pytest.importorskip("pyfmi_sysml")
 
 from pyfmi_interop.builder import resolve_runtime_include  # noqa: E402
 from pyfmi_interop.packaging import platform_binary_dir  # noqa: E402

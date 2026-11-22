@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from google.protobuf.descriptor import FieldDescriptor
-from pyfmi_interop import build_model, generate_model, package_fmu
+from pyfmi_interop import BuildConfig, build_model, generate_model, package_fmu
 from pyfmi_interop.ir import (
     DataType,
     Direction,
@@ -586,8 +586,7 @@ def _model_from_architecture(
     part: str | None,
     step_size_s: float | None,
 ) -> ModelDefinition:
-    from pyfmi_interop.sysml import DEFAULT_STRING_CAPACITY
-    from pyfmi_sysml2.core.reduction import component_interface
+    from pyfmi_sysml import DEFAULT_STRING_CAPACITY, component_interface
 
     definition = _select_part(architecture, part)
     component = component_interface(architecture, definition)
@@ -623,7 +622,6 @@ def generate_entity_adapter(
     *,
     build: bool = True,
     package: bool = True,
-    fmi_layer: str = "interop",
     name: str | None = None,
     part: str | None = None,
     step_size_s: float | None = None,
@@ -639,7 +637,7 @@ def generate_entity_adapter(
     the generated model directory.
     """
 
-    from pyfmi_sysml2.core import architecture as load_architecture
+    from pyfmi_sysml import architecture as load_architecture
 
     register()
     frame_mode = resolve_frame_mode(frame_mode)
@@ -654,9 +652,7 @@ def generate_entity_adapter(
     generate_model(
         model,
         model_dir,
-        serialization=backend.name,
-        fmi_layer=fmi_layer,
-        sysml_source=architecture,
+        config=BuildConfig(serialization=backend.name),
     )
     if not build:
         return model_dir

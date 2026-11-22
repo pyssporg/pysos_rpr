@@ -53,7 +53,5 @@ dependency-free.
   upstream fix.
 - The proto tree is in the sdist but not the wheel, so the projection runs
   from a source checkout and raises `FileNotFoundError` without `proto/`.
-- `fmi_layer="psysml2"` needs a composition root, which the composition-less
-  `part def RprEntity` does not provide; only `interop` is exercised.
 - `model_id` hashes the wire interface (model name plus ordered value
   references and data types), not the RPR schema.
