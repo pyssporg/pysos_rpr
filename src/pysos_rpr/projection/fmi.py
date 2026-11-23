@@ -26,6 +26,7 @@ from typing import Any
 from google.protobuf.descriptor import FieldDescriptor
 from pyfmi_interop.ir import (
     DataType,
+    Direction,
     ModelDefinition,
     ProjectionError,
     Signal,
@@ -297,16 +298,18 @@ def _expected_type(field: FieldDescriptor) -> DataType:
 
 def _codec_fields(model: ModelDefinition) -> tuple[_CodecField, ...]:
     resolved: list[_CodecField] = []
-    seen: dict[str, str] = {}
+    seen: dict[tuple[str, Direction], str] = {}
     for signal in wire_signals(model):
         flat = _flat_name(signal)
-        previous = seen.get(flat)
+        key = (flat, signal.direction)
+        previous = seen.get(key)
         if previous is not None and previous != signal.name:
             raise ProjectionError(
-                f"signals {previous!r} and {signal.name!r} both map to {flat!r}",
+                f"signals {previous!r} and {signal.name!r} both map to {flat!r} "
+                f"in the {signal.direction.name.lower()} direction",
                 signal_name=signal.name,
             )
-        seen[flat] = signal.name
+        seen[key] = signal.name
         chain = _resolve_path(SCHEMA_PATHS[flat])
         expected = _expected_type(chain[-1])
         if signal.data_type is not expected:
@@ -400,9 +403,36 @@ def _encode_statement(field: _CodecField) -> str:
     return f"    {_mutable_accessor(field.chain)}({value});"
 
 
+def _direction_view(
+    fields: tuple[_CodecField, ...], wanted: Direction
+) -> list[_CodecField]:
+    """One field per proto leaf, preferring ``wanted`` when a leaf has both.
+
+    A leaf declared once is written in both directions, as the codec has always
+    done.  A leaf declared twice -- an output to publish and an input to
+    subscribe, on two ports of one model -- encodes from its output member and
+    decodes into its input member, so one payload field never has two sources.
+    """
+
+    grouped: dict[str, list[_CodecField]] = {}
+    for field in fields:
+        grouped.setdefault(_flat_name(field.signal), []).append(field)
+    view: list[_CodecField] = []
+    for group in grouped.values():
+        chosen = next(
+            (field for field in group if field.signal.direction is wanted), group[0]
+        )
+        view.append(chosen)
+    return view
+
+
 def _render_model_wire(model: ModelDefinition, fields: tuple[_CodecField, ...]) -> str:
-    encode_lines = "\n".join(_encode_statement(field) for field in fields)
-    decode_lines = "\n".join(_decode_statement(field) for field in fields)
+    encode_lines = "\n".join(
+        _encode_statement(field) for field in _direction_view(fields, Direction.OUTPUT)
+    )
+    decode_lines = "\n".join(
+        _decode_statement(field) for field in _direction_view(fields, Direction.INPUT)
+    )
     if not encode_lines:
         encode_lines = "    (void)message;"
     if not decode_lines:

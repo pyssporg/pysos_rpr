@@ -22,6 +22,7 @@ from pyfmi_interop.ir import (  # noqa: E402
     Signal,
     deterministic_guid,
 )
+from pyfmi_interop.serialization.naming import member_name  # noqa: E402
 
 from pysos_rpr.projection import RprSerialization, register  # noqa: E402
 from pysos_rpr.schema_paths import SCHEMA_PATHS  # noqa: E402
@@ -108,6 +109,68 @@ def test_a_wrong_data_type_is_an_error(tmp_path):
             tmp_path / "gen",
             config=BuildConfig(serialization="rpr"),
         )
+
+
+def _two_way_model(*, both_outputs: bool = False) -> ModelDefinition:
+    inbound_direction = Direction.OUTPUT if both_outputs else Direction.INPUT
+    signals = (
+        Signal("entityState.spatial_world_location_x", 1, DataType.REAL, Direction.OUTPUT),
+        Signal("peerState.spatial_world_location_x", 2, DataType.REAL, inbound_direction),
+    )
+    return ModelDefinition(
+        name="RprTwoWayProbe",
+        guid=deterministic_guid("RprTwoWayProbe"),
+        step_size_s=None,
+        realtime=False,
+        signals=signals,
+        interface="RprEntity",
+    )
+
+
+def test_one_leaf_may_be_published_and_subscribed(tmp_path):
+    # An out port and an in port may carry the same RPR leaf: the payload field
+    # is encoded from the output member and decoded into the input member.
+    target = generate_model(
+        _two_way_model(), tmp_path / "gen", config=BuildConfig(serialization="rpr")
+    )
+    source = (target / "model_wire.cpp").read_text(encoding="utf-8")
+    encode, decode = source.split("GeneratedModelRuntime::encode_wire_payload", 1)[1].split(
+        "GeneratedModelRuntime::decode_wire_payload", 1
+    )
+    out_member = member_name(_two_way_model().signals[0])
+    in_member = member_name(_two_way_model().signals[1])
+
+    assert out_member in encode
+    assert in_member not in encode
+    assert in_member in decode
+    assert out_member not in decode
+
+
+def test_two_signals_in_one_direction_on_one_leaf_are_an_error(tmp_path):
+    with pytest.raises(
+        ProjectionError,
+        match="both map to 'spatial_world_location_x' in the output direction",
+    ):
+        generate_model(
+            _two_way_model(both_outputs=True),
+            tmp_path / "gen",
+            config=BuildConfig(serialization="rpr"),
+        )
+
+
+def test_a_single_direction_leaf_keeps_being_written_in_both_directions(tmp_path):
+    # One-port models rely on the codec writing every field both ways.
+    target = generate_model(
+        make_model(), tmp_path / "gen", config=BuildConfig(serialization="rpr")
+    )
+    source = (target / "model_wire.cpp").read_text(encoding="utf-8")
+    encode, decode = source.split("GeneratedModelRuntime::encode_wire_payload", 1)[1].split(
+        "GeneratedModelRuntime::decode_wire_payload", 1
+    )
+    member = member_name(make_model().signals[0])
+
+    assert member in encode
+    assert member in decode
 
 
 def test_importing_the_projection_does_not_register_as_a_side_effect():
