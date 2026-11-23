@@ -112,10 +112,10 @@ def test_a_wrong_data_type_is_an_error(tmp_path):
 
 
 def _two_way_model(*, both_outputs: bool = False) -> ModelDefinition:
-    inbound_direction = Direction.OUTPUT if both_outputs else Direction.INPUT
+    published = Direction.OUTPUT if both_outputs else Direction.INPUT
     signals = (
-        Signal("entityState.spatial_world_location_x", 1, DataType.REAL, Direction.OUTPUT),
-        Signal("peerState.spatial_world_location_x", 2, DataType.REAL, inbound_direction),
+        Signal("entityState.spatial_world_location_x", 1, DataType.REAL, published),
+        Signal("peerState.spatial_world_location_x", 2, DataType.REAL, Direction.OUTPUT),
     )
     return ModelDefinition(
         name="RprTwoWayProbe",
@@ -128,8 +128,9 @@ def _two_way_model(*, both_outputs: bool = False) -> ModelDefinition:
 
 
 def test_one_leaf_may_be_published_and_subscribed(tmp_path):
-    # An out port and an in port may carry the same RPR leaf: the payload field
-    # is encoded from the output member and decoded into the input member.
+    # An input port and an output port may carry the same RPR leaf: the
+    # payload field is encoded from the input member (published) and decoded
+    # into the output member (subscribed).
     target = generate_model(
         _two_way_model(), tmp_path / "gen", config=BuildConfig(serialization="rpr")
     )
@@ -137,13 +138,13 @@ def test_one_leaf_may_be_published_and_subscribed(tmp_path):
     encode, decode = source.split("GeneratedModelRuntime::encode_wire_payload", 1)[1].split(
         "GeneratedModelRuntime::decode_wire_payload", 1
     )
-    out_member = member_name(_two_way_model().signals[0])
-    in_member = member_name(_two_way_model().signals[1])
+    published = member_name(_two_way_model().signals[0])
+    subscribed = member_name(_two_way_model().signals[1])
 
-    assert out_member in encode
-    assert in_member not in encode
-    assert in_member in decode
-    assert out_member not in decode
+    assert published in encode
+    assert subscribed not in encode
+    assert subscribed in decode
+    assert published not in decode
 
 
 def test_two_signals_in_one_direction_on_one_leaf_are_an_error(tmp_path):

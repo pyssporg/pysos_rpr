@@ -24,8 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - The `rpr` codec accepts one proto leaf carried in both directions: encode
-  uses the output member and decode the input member, so a model with an out
-  port and an in port emits one payload field per leaf (2026-11-23).
+  uses the input member and decode the output member, matching the
+  `pyfmi_interop` wire convention, so a model with an in port and an out port
+  emits one payload field per leaf (2026-11-23).
 - Follow the RPR entity-state SysML asset to `pyfmi_rpr`'s packaged location
   (`src/pyfmi_rpr/sysml/rpr_entity.sysml`, exposed as `pyfmi_rpr.rpr_entity()`);
   the projection e2e test now fails instead of skipping when the asset is

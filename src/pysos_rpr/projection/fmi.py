@@ -408,10 +408,10 @@ def _direction_view(
 ) -> list[_CodecField]:
     """One field per proto leaf, preferring ``wanted`` when a leaf has both.
 
-    A leaf declared once is written in both directions, as the codec has always
-    done.  A leaf declared twice -- an output to publish and an input to
-    subscribe, on two ports of one model -- encodes from its output member and
-    decodes into its input member, so one payload field never has two sources.
+    A leaf declared once is written in both directions.  A leaf declared twice
+    -- an input to publish and an output to subscribe, on two ports of one
+    model -- is encoded from its input member (published) and decoded into its
+    output member (subscribed), so one payload field never has two sources.
     """
 
     grouped: dict[str, list[_CodecField]] = {}
@@ -428,10 +428,10 @@ def _direction_view(
 
 def _render_model_wire(model: ModelDefinition, fields: tuple[_CodecField, ...]) -> str:
     encode_lines = "\n".join(
-        _encode_statement(field) for field in _direction_view(fields, Direction.OUTPUT)
+        _encode_statement(field) for field in _direction_view(fields, Direction.INPUT)
     )
     decode_lines = "\n".join(
-        _decode_statement(field) for field in _direction_view(fields, Direction.INPUT)
+        _decode_statement(field) for field in _direction_view(fields, Direction.OUTPUT)
     )
     if not encode_lines:
         encode_lines = "    (void)message;"
