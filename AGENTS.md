@@ -29,6 +29,10 @@ lifecycle.
   (`repos/pyfmi_rpr/src/pyfmi_rpr/sysml/rpr_entity.sysml`, exposed as
   `pyfmi_rpr.rpr_entity()`), not this package's. Frame mode `identity` is an
   interop stand-in, not RPR conformance.
+- Layout: `src/pysos_rpr/messages.py` (reference codec), `schema_paths.py`
+  (generated table), `_proto/` (generated bindings), and `projection/` and
+  `composition/` (optional extras). Proto sources live in `proto/rpr/v2/`;
+  regeneration scripts live in `tools/`.
 
 ## Hard constraints
 
@@ -72,4 +76,6 @@ lifecycle.
 - Python >= 3.11, `src/` layout.
 - Install: `pip install -e ".[dev]"`.
 - Tests: `python -m pytest`; lint: `ruff check src tests` (line length 100,
-  target py311).
+  target py311; configured in `pyproject.toml`, generated `_proto` excluded).
+- Regenerate committed output with `bash tools/generate_bindings.sh` and
+  `python tools/generate_schema_paths.py`; never edit either output by hand.

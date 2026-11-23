@@ -17,14 +17,24 @@
 
 ## Install
 
+Python 3.11 or newer is required. The runtime dependency is `protobuf`
+(`>=5.29,<6`); `protoc` and `grpcio-tools` are needed only to regenerate the
+committed bindings.
+
 ```bash
 pip install pysos-rpr
+pip install -e ".[dev]"              # this checkout: tests, lint, grpcio-tools
+pip install -e "repos/pysos_rpr[dev]"  # from the workspace root
 ```
+
+The optional `projection` and `composition` extras add the FMI adapter and the
+source-ingestion layer (`pyfmi-interop`, `pyfmi-sysml`); the base install stays
+vocabulary-only.
 
 The source tree ships the proto definitions under `proto/rpr/v2/`, and the
 package ships the committed Python bindings under `pysos_rpr._proto`, so
 `protoc` is not needed at runtime. Regenerate the bindings with
-`tools/generate_bindings.sh`; the field-level RPR and DIS mapping is in
+`bash tools/generate_bindings.sh`; the field-level RPR and DIS mapping is in
 `docs/rpr-mapping.md`.
 
 ## API
@@ -72,7 +82,23 @@ the non-strict decode/re-encode pair is byte-identical.
 
 ## Status
 
-0.1.0 is the published scaffold tag. The current tree carries the R2/R3
-vocabulary (`proto/rpr/v2/`), its generated Python bindings, the schema
-contract tests that pin field numbers, reserved ranges and golden bytes, and
-the `pysos_rpr.messages` reference codec.
+0.1.0 is the first published release. It ships the `rpr.v2` vocabulary
+(`proto/rpr/v2/`), its generated Python bindings, the schema contract tests that
+pin field numbers, reserved ranges and golden bytes, and the
+`pysos_rpr.messages` reference codec.
+
+## Development
+
+```bash
+python -m pytest
+ruff check src tests
+bash tools/generate_bindings.sh                  # regenerate _proto from proto/
+python tools/generate_schema_paths.py            # regenerate schema_paths.py
+```
+
+Ruff is configured in `pyproject.toml` (line length 100, target `py311`) and
+excludes the generated `src/pysos_rpr/_proto` bindings. Read
+[`AGENTS.md`](AGENTS.md), the
+[vocabulary subset](docs/breakdown/02-architecture/vocabulary-subset.md) and the
+[projection](docs/breakdown/02-architecture/projection.md) before changing the
+schema or a projection.
