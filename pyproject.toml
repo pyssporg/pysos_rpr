@@ -51,7 +51,6 @@ include = [
   "/src",
   "/tests",
   "/proto",
-  "/sysml",
   "/tools",
   "/docs",
   "/README.md",

@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Generated SysML projection of the entity state
-  (`sysml/rpr_entity.sysml`, `src/pysos_rpr/schema_paths.py`), flat because the
-  dialect has no record type; `bytes` fields are omitted and defaulted empty.
+- Generated flat schema table for the entity state
+  (`src/pysos_rpr/schema_paths.py`), flat because the dialect has no record
+  type; `bytes` fields are omitted and defaulted empty.
 - `pysos_rpr.projection`: an `rpr` serialization backend whose FMI payload is
   `rpr.v2.PhysicalEntity`, and `generate_entity_adapter()`.
 - `frame_mode` is `identity`: values pass through unconverted and orientation is
@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The RPR entity-state SysML port moved to `pyfmi_rpr`
+  (`sysml/rpr_entity.sysml`); this package keeps the protobuf contract and the
+  generated `schema_paths.py` table (2026-11-23).
 - Import the SysML projection from `pyfmi_sysml` 0.2.0 and require
   `pyfmi-interop>=0.6.0`; `pyfmi_interop.sysml` and `pyfmi_sysml2` are gone
   (2026-11-22).

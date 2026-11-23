@@ -23,10 +23,11 @@ lifecycle.
   its reference codec depend on nothing, while a *projection* may import the
   artifact implementer it targets. Consumers never make the vocabulary depend
   on them.
-- Projection: the SysML port library and the FMI `rpr` backend are generated
-  from the proto; `sysml/rpr_entity.sysml` and `schema_paths.py` are never
-  hand-edited. Frame mode `identity` is an interop stand-in, not RPR
-  conformance.
+- Projection: the flat schema table and the FMI `rpr` backend are generated
+  from the proto; `schema_paths.py` is never hand-edited. The SysML port built
+  from the vocabulary is an implementation asset of `pyfmi_rpr`
+  (`repos/pyfmi_rpr/sysml/rpr_entity.sysml`), not this package's. Frame mode
+  `identity` is an interop stand-in, not RPR conformance.
 
 ## Hard constraints
 
@@ -47,10 +48,11 @@ lifecycle.
 - **Not HLA-conformant.** No RTI, no federation services, no FOM module, no HLA
   object model, no join/resign/ownership/time-management concepts.
 - **Dependencies follow the projection.** The schema and the reference codec
-  import no sibling package. A projection module — the SysML port library, the
-  FMI adapter — may import the implementer it projects onto (`pyfmi_interop`,
-  `pyfmi_sysml`); a structured dependency on the artifact implementer is what
-  a projection is. No sibling ever imports this package's projection modules.
+  import no sibling package. A projection module — the FMI adapter, the
+  composition layer — may import the implementer it projects onto
+  (`pyfmi_interop`, `pyfmi_sysml`); a structured dependency on the artifact
+  implementer is what a projection is. No sibling ever imports this package's
+  projection modules.
 - **No application code.** This is a vocabulary and codec contract, not a CLI,
   engine, or federation manager.
 

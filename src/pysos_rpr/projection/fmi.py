@@ -249,8 +249,8 @@ def _walk_proto(names: tuple[str, ...]) -> tuple[FieldDescriptor, ...] | None:
 def _resolve_path(path: str) -> tuple[FieldDescriptor, ...]:
     """Resolve a ``SCHEMA_PATHS`` value against ``PhysicalEntity``.
 
-    Base-entity paths are stored without their ``base`` wrapper (the SysML
-    generator flattens it), so both the bare path and the ``base``-prefixed
+    Base-entity paths are stored without their ``base`` wrapper (the schema
+    table generator flattens it), so both the bare path and the ``base``-prefixed
     path are tried.  Exactly one must exist.
     """
 

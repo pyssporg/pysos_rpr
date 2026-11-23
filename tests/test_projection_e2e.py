@@ -23,7 +23,9 @@ from pysos_rpr import messages  # noqa: E402
 from pysos_rpr.projection import generate_entity_adapter  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-SYSML = ROOT / "sysml" / "rpr_entity.sysml"
+# The SysML port is pyfmi_rpr's asset.  This integration test points at the
+# sibling checkout; a standalone pysos_rpr checkout has no port to build from.
+SYSML = ROOT.parent / "pyfmi_rpr" / "sysml" / "rpr_entity.sysml"
 
 _CMAKE = shutil.which("cmake")
 _CXX = shutil.which("g++") or shutil.which("c++")
@@ -33,6 +35,10 @@ pytestmark = [
     pytest.mark.skipif(_CMAKE is None, reason="cmake is not available"),
     pytest.mark.skipif(_CXX is None, reason="no C++ compiler is available"),
     pytest.mark.skipif(_PROTOC is None, reason="protoc is not available"),
+    pytest.mark.skipif(
+        not SYSML.is_file(),
+        reason="the pyfmi_rpr sibling checkout with sysml/rpr_entity.sysml is not present",
+    ),
 ]
 
 VALUES = {

@@ -15,8 +15,9 @@ plain protobuf; it borrows RPR semantics without importing HLA machinery.
 ## Commitments
 
 - **One schema, many projections.** The proto definitions are the single
-  source. Every projection is generated from them: the Python bindings, the
-  SysML port library, and the FMI adapter. A projection may depend on the
+  source. Every projection this package ships is generated from them: the
+  Python bindings and the FMI adapter. The SysML port built from the vocabulary
+  is owned by its consumer (`pyfmi_rpr`). A projection may depend on the
   implementer it projects onto; the proto stays the only place vocabulary is
   written.
 - **RPR-derived, not RPR.** Names, enumerations and field meanings follow the

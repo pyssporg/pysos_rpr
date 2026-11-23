@@ -2,28 +2,29 @@
 id: INFO-003
 type: info
 title: FMI projection
-summary: The SysML port library and the rpr FMI backend are generated from the proto; identity frames are an interop stand-in, not RPR conformance.
+summary: The flat schema table and the rpr FMI backend are generated from the proto; the SysML port is owned by pyfmi_rpr, and identity frames are an interop stand-in, not RPR conformance.
 date: 2026-11-19
 status: current
 ---
 
 # FMI projection
 
-The projection turns the vocabulary into a SysML port library and an `rpr`
-FMI 2.0 payload backend. `tools/generate_sysml.py` reads the committed
+The projection turns the vocabulary into a flat schema table and an `rpr`
+FMI 2.0 payload backend. `tools/generate_schema_paths.py` reads the committed
 `rpr.v2` descriptors; no field list is written by hand.
 
-**SysML port.** `sysml/rpr_entity.sysml` declares one flat `port def
-EntityState`, one attribute per proto leaf. The dialect has no struct/record
-type and a typed attribute on a port collapses to one `Real`, so nested
-messages cannot stay nested. The flat name is the dotted path with `.`
-replaced by `_` (`spatial.world_location.x` ->
+**Schema table.** `src/pysos_rpr/schema_paths.py` maps the flat port attribute
+name to the dotted proto path and pins the proto type. The flat name is the
+dotted path with `.` replaced by `_` (`spatial.world_location.x` ->
 `spatial_world_location_x`); the mapping is not reversible because segments
-already contain underscores, so the generated
-`src/pysos_rpr/schema_paths.py` is the authority for names and proto types.
-`bytes` fields have no dialect representation:
-`spatial.dead_reckoning.parameters` is omitted and the codec defaults it to
-empty.
+already contain underscores, so this table is the authority. `bytes` fields
+have no dialect representation: `spatial.dead_reckoning.parameters` is omitted
+and the codec defaults it to empty.
+
+**SysML port.** The `port def EntityState` built from this table is an
+implementation asset of `pyfmi_rpr`, at
+`repos/pyfmi_rpr/sysml/rpr_entity.sysml`; that repository owns its attributes,
+metadata and parameters. This package does not ship or generate it.
 
 **Backend.** `RprSerialization` in `projection/fmi.py` is named `rpr`,
 registered explicitly by `register()`; importing the module registers
