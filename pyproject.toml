@@ -29,11 +29,11 @@ dependencies = ["protobuf>=5.29,<6"]
 # grpcio-tools 1.71.2 bundles the protoc that produced the committed bindings;
 # keep it exact so regeneration is byte-identical.
 dev = ["pytest>=8", "ruff>=0.6", "grpcio-tools==1.71.2"]
-# The FMI projection is the only module that imports an artifact implementer
-# (DEC-001).  The base install stays vocabulary-only and dependency-free.
-# The projection needs the SysML composition layer on top of the generated
-# runtime; 0.6.0 moved SysML out of `pyfmi_interop` into `pyfmi_sysml`.
-projection = [
+# The parser-free FMI projection imports only the generated runtime; the
+# composition layer adds source ingestion on top of it (DEC-001).  The base
+# install stays vocabulary-only and dependency-free.
+projection = ["pyfmi-interop>=0.6.0"]
+composition = [
   "pyfmi-interop>=0.6.0",
   "pyfmi-sysml>=0.2.0",
 ]

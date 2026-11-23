@@ -39,18 +39,15 @@ and angular velocity through unconverted; orientation is a reorder over
 maths: this is an interop stand-in, not RPR conformance. `"exact"` is reserved
 and not implemented.
 
-**Entry point.** `generate_entity_adapter()` loads the architecture, registers
-the backend, generates the model, builds it and packages the FMU. The
-`projection` extra in `pyproject.toml` pins `pyfmi-interop`; this module is the
-only one importing an artifact implementer, and the vocabulary stays
-dependency-free.
+**Entry point.** `generate_entity_adapter()` lives in `composition/sysml.py`:
+it loads the architecture, lowers it to a `ModelDefinition`, and generates,
+builds and packages the FMU. The parser-free `projection/fmi.py` re-exports it
+lazily, so `pysos_rpr.projection` keeps the entry point without importing
+composition. Extras split too: `projection` pins `pyfmi-interop`,
+`composition` adds `pyfmi-sysml`, and the base install stays `protobuf` only.
 
 **Known gaps.**
 
-- A cold build needs two passes: `generate_entity_adapter()` retries after
-  `_warm_proto_build()` when the first CMake build raises, because the proto
-  helper compiles a proto under its basename; the workaround waits on an
-  upstream fix.
 - The proto tree is in the sdist but not the wheel, so the projection runs
   from a source checkout and raises `FileNotFoundError` without `proto/`.
 - `model_id` hashes the wire interface (model name plus ordered value
