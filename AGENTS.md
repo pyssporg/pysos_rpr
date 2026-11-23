@@ -26,8 +26,9 @@ lifecycle.
 - Projection: the flat schema table and the FMI `rpr` backend are generated
   from the proto; `schema_paths.py` is never hand-edited. The SysML port built
   from the vocabulary is an implementation asset of `pyfmi_rpr`
-  (`repos/pyfmi_rpr/sysml/rpr_entity.sysml`), not this package's. Frame mode
-  `identity` is an interop stand-in, not RPR conformance.
+  (`repos/pyfmi_rpr/src/pyfmi_rpr/sysml/rpr_entity.sysml`, exposed as
+  `pyfmi_rpr.rpr_entity()`), not this package's. Frame mode `identity` is an
+  interop stand-in, not RPR conformance.
 
 ## Hard constraints
 

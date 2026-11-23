@@ -23,8 +23,9 @@ and the codec defaults it to empty.
 
 **SysML port.** The `port def EntityState` built from this table is an
 implementation asset of `pyfmi_rpr`, at
-`repos/pyfmi_rpr/sysml/rpr_entity.sysml`; that repository owns its attributes,
-metadata and parameters. This package does not ship or generate it.
+`repos/pyfmi_rpr/src/pyfmi_rpr/sysml/rpr_entity.sysml` and exposed as
+`pyfmi_rpr.rpr_entity()`; that repository owns its attributes, metadata and
+parameters. This package does not ship or generate it.
 
 **Backend.** `RprSerialization` in `projection/fmi.py` is named `rpr`,
 registered explicitly by `register()`; importing the module registers

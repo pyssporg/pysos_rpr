@@ -25,7 +25,24 @@ from pysos_rpr.projection import generate_entity_adapter  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 # The SysML port is pyfmi_rpr's asset.  This integration test points at the
 # sibling checkout; a standalone pysos_rpr checkout has no port to build from.
-SYSML = ROOT.parent / "pyfmi_rpr" / "sysml" / "rpr_entity.sysml"
+SYSML = (
+    ROOT.parent
+    / "pyfmi_rpr"
+    / "src"
+    / "pyfmi_rpr"
+    / "sysml"
+    / "rpr_entity.sysml"
+)
+
+
+def _sibling_pyfmi_rpr() -> bool:
+    """True when the importable pyfmi_rpr is the sibling editable checkout."""
+    try:
+        import pyfmi_rpr
+    except ImportError:
+        return False
+    return Path(pyfmi_rpr.__file__).resolve().is_relative_to(ROOT.parent / "pyfmi_rpr")
+
 
 _CMAKE = shutil.which("cmake")
 _CXX = shutil.which("g++") or shutil.which("c++")
@@ -36,8 +53,11 @@ pytestmark = [
     pytest.mark.skipif(_CXX is None, reason="no C++ compiler is available"),
     pytest.mark.skipif(_PROTOC is None, reason="protoc is not available"),
     pytest.mark.skipif(
-        not SYSML.is_file(),
-        reason="the pyfmi_rpr sibling checkout with sysml/rpr_entity.sysml is not present",
+        not _sibling_pyfmi_rpr(),
+        reason=(
+            "the pyfmi_rpr sibling checkout with "
+            "src/pyfmi_rpr/sysml/rpr_entity.sysml is not importable"
+        ),
     ),
 ]
 
@@ -120,6 +140,9 @@ int main() {{
 
 
 def test_identity_projection_end_to_end(tmp_path):
+    # pyfmi_rpr is importable once the module guard passes, so a missing asset
+    # means the path is wrong and must fail rather than skip silently.
+    assert SYSML.is_file(), f"pyfmi_rpr is importable but the SysML asset is missing at {SYSML}"
     fmu = generate_entity_adapter(SYSML, tmp_path)
 
     assert fmu.is_file()

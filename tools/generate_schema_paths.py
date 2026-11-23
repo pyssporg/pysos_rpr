@@ -17,8 +17,9 @@ not reversible (``world_location`` already contains an underscore), so the
 schema table is the authority.
 
 The SysML port built from this table is an implementation asset of
-``pyfmi_rpr`` (``repos/pyfmi_rpr/sysml/rpr_entity.sysml``); this package owns
-the protobuf contract and the table, not the port shape.
+``pyfmi_rpr`` (``src/pyfmi_rpr/sysml/rpr_entity.sysml``, exposed as
+``pyfmi_rpr.rpr_entity()``); this package owns the protobuf contract and the
+table, not the port shape.
 
 ``bytes`` fields have no dialect representation and are omitted from the port;
 the FMI codec defaults them to empty.

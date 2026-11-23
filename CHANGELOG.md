@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Follow the RPR entity-state SysML asset to `pyfmi_rpr`'s packaged location
+  (`src/pyfmi_rpr/sysml/rpr_entity.sysml`, exposed as `pyfmi_rpr.rpr_entity()`);
+  the projection e2e test now fails instead of skipping when the asset is
+  missing (2026-11-23).
 - The RPR entity-state SysML port moved to `pyfmi_rpr`
   (`sysml/rpr_entity.sysml`); this package keeps the protobuf contract and the
   generated `schema_paths.py` table (2026-11-23).
