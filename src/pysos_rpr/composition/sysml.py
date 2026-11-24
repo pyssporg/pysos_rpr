@@ -127,7 +127,7 @@ def generate_entity_adapter(
 ) -> Path:
     """Generate, build and package the RPR entity adapter FMU.
 
-    ``architecture`` is a SysML path or a loaded ``pycps_sysml2.Architecture``.
+    ``architecture`` is a SysML path or a loaded ``pycps_sysml.Architecture``.
     The payload backend is registered explicitly here, never as an import side
     effect.
 

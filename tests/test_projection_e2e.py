@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 pytest.importorskip("pyfmi_interop")
-pytest.importorskip("pycps_sysml2")
+pytest.importorskip("pycps_sysml")
 pytest.importorskip("pyfmi_sysml")
 
 from pyfmi_interop.builder import resolve_runtime_include  # noqa: E402
