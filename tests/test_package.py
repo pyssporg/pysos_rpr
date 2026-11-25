@@ -20,4 +20,4 @@ def test_version_is_semver():
 
 
 def test_version_matches_release():
-    assert pysos_rpr.__version__ == "0.1.0"
+    assert pysos_rpr.__version__ == "0.2.0"

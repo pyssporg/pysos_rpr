@@ -32,11 +32,18 @@ dev = ["pytest>=8", "ruff>=0.6", "grpcio-tools==1.71.2"]
 # The parser-free FMI projection imports only the generated runtime; the
 # composition layer adds source ingestion on top of it (DEC-001).  The base
 # install stays vocabulary-only and dependency-free.
-projection = ["pyfmi-interop>=0.6.0"]
-composition = [
-  "pyfmi-interop>=0.6.0",
-  "pyfmi-sysml>=0.2.0",
+projection = [
+  "pyfmi-interop @ https://github.com/pyssporg/pyfmi_interop/releases/download/v0.7.0/pyfmi_interop-0.7.0-py3-none-linux_x86_64.whl",
 ]
+composition = [
+  "pyfmi-interop @ https://github.com/pyssporg/pyfmi_interop/releases/download/v0.7.0/pyfmi_interop-0.7.0-py3-none-linux_x86_64.whl",
+  "pyfmi-sysml @ https://github.com/pyssporg/pyfmi_sysml/releases/download/v0.2.0/pyfmi_sysml-0.2.0-py3-none-any.whl",
+]
+
+# The sibling releases are not on PyPI, so the optional extras pin them by
+# direct URL; hatchling refuses those unless this is enabled.
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.hatch.version]
 path = "src/pysos_rpr/__init__.py"

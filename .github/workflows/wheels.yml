@@ -66,23 +66,24 @@ jobs:
           python -m venv /tmp/smoke
           /tmp/smoke/bin/pip install dist/*.whl
           /tmp/smoke/bin/python - <<'PY'
+          import os
+
           import pysos_rpr
           import pysos_rpr.messages as messages
 
-          assert pysos_rpr.__version__ == "0.1.0"
+          # On a tag build the tag name without its leading "v" must equal the
+          # version the wheel reports; the version is never hardcoded here.
+          if os.environ.get("GITHUB_REF", "").startswith("refs/tags/v"):
+              version = os.environ["GITHUB_REF_NAME"].removeprefix("v")
+              assert pysos_rpr.__version__ == version, (
+                  f"tag {os.environ['GITHUB_REF_NAME']} does not match "
+                  f"built version {pysos_rpr.__version__}"
+              )
+
           assert messages.encode(
               messages.entity_identifier(site=1, application=1, entity=1)
           )
           PY
-
-      - name: Check the version tag
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          version="$(/tmp/smoke/bin/python -c "import pysos_rpr; print(pysos_rpr.__version__)")"
-          if [ "${GITHUB_REF_NAME#v}" != "$version" ]; then
-            echo "Tag ${GITHUB_REF_NAME} does not match built version ${version}." >&2
-            exit 1
-          fi
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
